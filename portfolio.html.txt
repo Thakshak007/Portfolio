@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thakshak MP | VLSI & Embedded Systems</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1>Thakshak MP</h1>
+            <h2>Physical Design Trainee & Embedded Hardware Intern</h2>
+            <div class="contact-links">
+                <a href="mailto:thakshakvlsi@gmail.com">thakshakvlsi@gmail.com</a> | 
+                <span>+916361673065</span> | 
+                <span>Bengaluru, India</span> |
+                <a href="https://linkedin.com/in/thakshak">LinkedIn</a>
+            </div>
+        </div>
+    </header>
+
+    <main class="container">
+        <section id="summary">
+            <h3>Summary</h3>
+            <p>Self-directed Work Study Student motivated to apply education and experience in job role. Excellent listener comfortable completing various tasks to keep operations running smoothly.</p>
+        </section>
+
+        <section id="experience">
+            <h3>Experience</h3>
+            <div class="card">
+                <h4>Physical Design Trainee</h4>
+                <p class="subtitle">VLSI Guru Institute, Bengaluru, Karnataka, 560019, India | Aug 2024</p>
+                <ul>
+                    <li>Performed end-to-end physical design flow including synthesis, floorplanning, placement, CTS, and routing using industry-standard EDA tools in 28nm multi voltage technology.</li>
+                    <li>Conducted setup and hold timing analysis using Prime Time, and resolved violations to resolve timing closure.</li>
+                </ul>
+            </div>
+            
+            <div class="card">
+                <h4>Embedded Hardware Intern</h4>
+                <p class="subtitle">Mistral Solutions Pvt Ltd, Bengaluru, Karnataka | Sep 2023</p>
+                <ul>
+                    <li>Executed VHDL-based design and simulation for UART, SPI and I2C protocols.</li>
+                    <li>Utilized IP Catalog for integrated circuit selection and integration.</li>
+                    <li>Tools: Xilinx Vivado</li>
+                </ul>
+            </div>
+        </section>
+
+        <section id="education">
+            <h3>Education</h3>
+            <ul>
+                <li><strong>Master of Technology, VLSI Design and Embedded Systems</strong><br>Bangalore Institute of Technology (BIT), Visvesvaraya Technological University, Bangalore | 2022-2024</li>
+                <li><strong>Bachelor of Engineering, Electronics and Communication Engineering</strong><br>HMS Institute of Technology (HMSIT), Visvesvaraya Technological University, Tumkuru | 2018-2022</li>
+            </ul>
+        </section>
+
+        <section id="projects">
+            <h3>Projects</h3>
+            <div class="project-grid">
+                <div class="project-card">
+                    <h4>16-bit MAC Unit</h4>
+                    <p>Implementation of a 16-bit MAC unit integrating modified Booth multiplier and hybrid adder. Applied pipelining and power gating for area/power efficiency.</p>
+                </div>
+                <div class="project-card">
+                    <h4>Low-Power ALU</h4>
+                    <p>Implemented low-power ALU using clock gating and control signal gating.</p>
+                </div>
+                <div class="project-card">
+                    <h4>Physical Design of ORCA Top Benchmark</h4>
+                    <p>Executed end-to-end physical design on the ORCA top benchmark. Handled a complex design consisting of 52,000 cells and 40 macros, focusing on optimal floorplanning and routing, ensuring macros were properly placed at the sides of the core area.</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="skills">
+            <h3>Skills</h3>
+            <ul>
+                <li><strong>Languages:</strong> Verilog, TCL, VHDL</li>
+                <li><strong>Tools:</strong> Synopsys (DC, ICC2, Primetime, starRC), Cadence (genus and Innovus) and Xilinx Vivado.</li>
+                <li><strong>Methodology understanding:</strong> ASIC flow (RTL-GDSII), Physical Design, STA, Timing Closure.</li>
+            </ul>
+        </section>
+        
+        <section id="certifications">
+            <h3>Certifications and Licenses</h3>
+            <ul>
+                <li>Cadence: 'All About Cadence', Student Ambassador Badge</li>
+                <li>VLSI Design Flow: RTL to GDS-II, NPTEL (IIT Delhi)</li>
+            </ul>
+        </section>
+
+        <section id="languages">
+            <h3>Languages</h3>
+            <ul>
+                <li>Kannada, Telugu, Tamil, Hindi</li>
+            </ul>
+        </section>
+
+        <section id="job-board" class="dynamic-section">
+            <h3>Curated Job Matches</h3>
+            <p class="note">Integration pending: This section will automatically display LinkedIn job postings filtered for VLSI and Embedded Systems roles matching an MTech background.</p>
+            <div id="job-results">
+                </div>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2026 Thakshak MP. Built for Vercel/Netlify.</p>
+    </footer>
+</body>
+</html>
