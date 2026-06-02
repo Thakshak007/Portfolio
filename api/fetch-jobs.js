@@ -1,57 +1,62 @@
 export default async function handler(req, res) {
-    // Force cross-origin accessibility flags for clean browser communication
     res.setHeader('Access-Control-Allow-Origin', '*');
     res.setHeader('Content-Type', 'application/json');
 
     let processedMasterFeed = [];
 
     // ==========================================================
-    // PIPELINE 1: Real-World Live LinkedIn Guest Engine 
+    // PIPELINE 1: Live LinkedIn Guest Engine (Fixed HTML Parsers)
     // ==========================================================
     try {
-        // Querying LinkedIn's native search tunnel for Physical Design engineering in India
-        const linkedinTargetUrl = 'https://www.linkedin.com/jobs-guest/jobs/api/seeMoreJobPostings/search?keywords=Physical%20Design%20Engineer&location=India&f_TPR=r604800&start=0';
+        // Broadened search query to pull physical design, VLSI trainees, and fresh hardware roles simultaneously
+        const linkedinTargetUrl = 'https://www.linkedin.com/jobs-guest/jobs/api/seeMoreJobPostings/search?keywords=Physical%20Design%20Trainee%20Fresher&location=India&f_TPR=r2592000&start=0';
         
         const liResponse = await fetch(linkedinTargetUrl, {
             headers: {
-                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
-                'Accept-Language': 'en-US,en;q=0.9'
+                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36',
+                'Accept-Language': 'en-US,en;q=0.9',
+                'Cache-Control': 'no-cache'
             }
         });
 
         if (liResponse.ok) {
             const rawHtmlChunk = await liResponse.text();
             
-            // Parse individual structural card rows from the LinkedIn layout string
+            // Split the raw string by the list item rows layout
             const rawCards = rawHtmlChunk.split('<li');
             
             for (let i = 1; i < rawCards.length; i++) {
                 const cardHtml = rawCards[i];
                 
-                // Track down matching tags for titles, companies, links, and locations
+                // FIXED PARSERS: Updated to target LinkedIn's live public guest card markers
                 const titleMatch = cardHtml.match(/<h3 class="base-search-card__title">([\s\S]*?)<\/h3>/);
-                const companyMatch = cardHtml.match(/<a class="hidden-nested-link"[\s\S]*?>([\s\S]*?)<\/a>/) || cardHtml.match(/<h4 class="base-search-card__subtitle">([\s\S]*?)<\/h4>/);
+                const companyMatch = cardHtml.match(/<h4 class="base-search-card__subtitle">([\s\S]*?)<\/h4>/) || cardHtml.match(/<a class="hidden-nested-link"[\s\S]*?>([\s\S]*?)<\/a>/);
                 const locationMatch = cardHtml.match(/<span class="job-search-card__location">([\s\S]*?)<\/span>/);
                 const linkMatch = cardHtml.match(/<a class="base-card__full-link"[\s\S]*?href="([\s\S]*?)"/);
 
                 if (titleMatch && linkMatch) {
+                    const cleanTitle = titleMatch[1].trim();
+                    const cleanCompany = companyMatch ? companyMatch[1].replace(/<[^>]*>/g, '').trim() : "Semiconductor Partner";
+                    const cleanLocation = locationMatch ? locationMatch[1].trim() : "Bengaluru, India";
+                    const cleanLink = linkMatch[1].split('?')[0]; // Clean out tracking analytics strings
+
                     processedMasterFeed.push({
-                        title: titleMatch[1].trim(),
-                        company: companyMatch ? companyMatch[1].trim() : "Semiconductor Hiring Partner",
-                        location: locationMatch ? locationMatch[1].trim() : "Bengaluru, India",
-                        link: linkMatch[1].split('?')[0], // Strips tracking parameters out for clean linking
-                        description: "Real-world live vacancy sourced from LinkedIn search registry index. Click apply to review full timeline benchmarks and profile requirements.",
-                        source: "LinkedIn Live Index"
+                        title: cleanTitle,
+                        company: cleanCompany,
+                        location: cleanLocation,
+                        link: cleanLink,
+                        description: `Live recruitment vacancy open for application. Sourced from active tracking indices. Click apply to review specific screening pipelines, interview processing structures, and timeline constraints.`,
+                        source: "LinkedIn Live Grid"
                     });
                 }
             }
         }
     } catch (liError) {
-        console.warn("LinkedIn guest stream throttled by rate limit filter.", liError);
+        console.warn("LinkedIn guest stream safely caught or bypassed:", liError);
     }
 
     // ==========================================================
-    // PIPELINE 2: Global Startup Ecosystem Feed (HackerNews)
+    // PIPELINE 2: Global Ecosystem Feed (HackerNews)
     // ==========================================================
     try {
         const hnResponse = await fetch('https://hnrss.org/jobs');
@@ -90,7 +95,7 @@ export default async function handler(req, res) {
     } catch (hnError) { console.warn("Tech RSS endpoint timed out.", hnError); }
 
     // ==========================================================
-    // PIPELINE 3: Remote Hardware & Global API (WeWorkRemotely)
+    // PIPELINE 3: Remote Hardware API (WeWorkRemotely)
     // ==========================================================
     try {
         const wwrResponse = await fetch('https://weworkremotely.com/api/v1/posts');
@@ -112,25 +117,27 @@ export default async function handler(req, res) {
     } catch (wwrError) { console.warn("Global WWR stream offline.", wwrError); }
 
     // ==========================================================
-    // MULTI-SITE CRITERIA INTELLIGENT MATCHING LAYER
+    // CONSTRAINTS & KEYWORD MATCHING ENGINE (From Your Images)
     // ==========================================================
-    // These keywords screen your collective feeds so only relevant roles show up
-    const trackingKeywords = [
-        'vlsi', 'physical design', 'asic', 'hardware', 'pcb', 'layout', 'circuit',
-        'sta', 'timing', 'synthesis', 'floorplanning', 'placement', 'cts', 'routing',
-        'fresher', 'trainee', 'junior', 'graduate', 'engineer', 'developer'
+    const targetKeywords = [
+        // Hardcore Engineering Domain Keywords
+        'vlsi', 'physical design', 'asic', 'hardware', 'pcb', 'layout', 'circuit', 'dft',
+        'sta', 'timing', 'synthesis', 'floorplanning', 'placement', 'cts', 'routing', 'cmos',
+        // Real-world Image Constraints & Screening Criteria
+        'fresher', 'trainee', 'junior', 'graduate', 'walk-in', 'drive', 'written test', '4 lpa'
     ];
 
     try {
+        // Filter out unmatched software noise, keeping only your hardware target roles
         const filteredOutput = processedMasterFeed.filter(job => {
             const rawBlockText = ((job.title || '') + " " + (job.description || '')).toLowerCase();
-            return trackingKeywords.some(keyword => rawBlockText.includes(keyword.toLowerCase()));
+            return targetKeywords.some(keyword => rawBlockText.includes(keyword.toLowerCase()));
         });
 
-        // Safe Fallback: If filter runs dry, present the 12 most fresh live entries directly
-        const payloadToReturn = filteredOutput.length > 0 ? filteredOutput : processedMasterFeed.slice(0, 12);
+        // Fallback strategy: pass the raw payload if filters reduce the list to zero
+        const finalPayload = filteredOutput.length > 0 ? filteredOutput : processedMasterFeed.slice(0, 15);
         
-        return res.status(200).json(payloadToReturn);
+        return res.status(200).json(finalPayload);
 
     } catch (filterException) {
         console.error("Critical layer matching exception:", filterException);
