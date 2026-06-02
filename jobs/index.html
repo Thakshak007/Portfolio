@@ -20,7 +20,7 @@
         </section>
 
         <section id="results-section">
-            <div id="loading" class="hidden">Searching LinkedIn & Job Boards... Please wait...</div>
+            <div id="loading" class="hidden">Searching Engineering Feeds... Please wait...</div>
             <div id="job-feed-list">
                 </div>
         </section>
@@ -35,36 +35,54 @@
             loading.classList.remove('hidden');
 
             try {
-                // Calls the Vercel backend serverless function we are creating in Step 4
+                // Fetch data from your backend function
                 const response = await fetch('/api/fetch-jobs');
-                const jobs = await response.json();
+                
+                if (!response.ok) {
+                    throw new Error(`Server returned status code: ${response.status}`);
+                }
 
+                const jobs = await response.json();
                 loading.classList.add('hidden');
 
-                if (jobs.length === 0) {
-                    feedList.innerHTML = '<p class="no-jobs">No new matching roles found matching your educational profile today.</p>';
+                // Safety Check: If the server response isn't an array, force it into one
+                const jobArray = Array.isArray(jobs) ? jobs : [];
+
+                if (jobArray.length === 0) {
+                    feedList.innerHTML = '<p style="text-align:center; color:#94a3b8;">No matching semiconductor or core roles found today. Click refresh to retry.</p>';
                     return;
                 }
 
-                jobs.forEach(job => {
+                // Render the cards cleanly on screen
+                jobArray.forEach(job => {
                     const card = document.createElement('div');
                     card.className = 'job-card';
+                    
+                    // Fallback selectors to prevent empty text fields
+                    const title = job.title || "Engineering Position";
+                    const company = job.company || "Technology Partner";
+                    const location = job.location || "Bengaluru, India";
+                    const source = job.source || "Industry Network";
+                    const url = job.link || "#";
+                    const desc = job.description || "Click apply to view core tracking specifications and profile demands.";
+
                     card.innerHTML = `
-                        <h3>${job.position || job.title}</h3>
-                        <p class="company">🏢 ${job.company} | 📍 ${job.location}</p>
-                        <p class="source-tag">Source: <strong>${job.source}</strong></p>
-                        <a href="${job.jobUrl || job.link}" target="_blank" class="apply-btn">Apply For Role</a>
+                        <h3>${title}</h3>
+                        <p class="company">🏢 ${company} | 📍 ${location}</p>
+                        <p style="font-size: 0.9rem; color: #cbd5e1; margin: 10px 0;">${desc}</p>
+                        <p class="source-tag">Source: <strong>${source}</strong></p>
+                        <a href="${url}" target="_blank" class="apply-btn">Apply For Role</a>
                     `;
                     feedList.appendChild(card);
                 });
             } catch (error) {
                 loading.classList.add('hidden');
-                feedList.innerHTML = '<p class="error">Failed to look up job portals. Please try again later.</p>';
-                console.error(error);
+                feedList.innerHTML = '<p style="text-align:center; color:#ef4444; font-weight:bold;">⚠️ Connection active, but parsing feed failed. Click Refresh to reload the pipeline.</p>';
+                console.error("Frontend decoding exception:", error);
             }
         }
         
-        // Auto-load roles immediately when page opens
+        // Auto-execute the pipeline immediately on load
         window.onload = loadJobs;
     </script>
 </body>
