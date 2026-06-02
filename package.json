@@ -2,7 +2,5 @@
   "name": "thakshak-jobs-engine",
   "version": "1.0.0",
   "type": "module",
-  "dependencies": {
-    "linkedin-jobs-api": "^1.0.7"
-  }
+  "dependencies": {}
 }
