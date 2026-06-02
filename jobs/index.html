@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Personal Job Board | Search Dashboard</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1>Automated Job Search Engine</h1>
+            <p>Sourcing and filtering live roles matching your preferences</p>
+        </div>
+    </header>
+
+    <main class="container">
+        <section id="controls">
+            <button onclick="loadJobs()">🔍 Refresh Live Job Feed</button>
+        </section>
+
+        <section id="results-section">
+            <div id="loading" class="hidden">Searching LinkedIn & Job Boards... Please wait...</div>
+            <div id="job-feed-list">
+                </div>
+        </section>
+    </main>
+
+    <script>
+        async function loadJobs() {
+            const feedList = document.getElementById('job-feed-list');
+            const loading = document.getElementById('loading');
+            
+            feedList.innerHTML = '';
+            loading.classList.remove('hidden');
+
+            try {
+                // Calls the Vercel backend serverless function we are creating in Step 4
+                const response = await fetch('/api/fetch-jobs');
+                const jobs = await response.json();
+
+                loading.classList.add('hidden');
+
+                if (jobs.length === 0) {
+                    feedList.innerHTML = '<p class="no-jobs">No new matching roles found matching your educational profile today.</p>';
+                    return;
+                }
+
+                jobs.forEach(job => {
+                    const card = document.createElement('div');
+                    card.className = 'job-card';
+                    card.innerHTML = `
+                        <h3>${job.position || job.title}</h3>
+                        <p class="company">🏢 ${job.company} | 📍 ${job.location}</p>
+                        <p class="source-tag">Source: <strong>${job.source}</strong></p>
+                        <a href="${job.jobUrl || job.link}" target="_blank" class="apply-btn">Apply For Role</a>
+                    `;
+                    feedList.appendChild(card);
+                });
+            } catch (error) {
+                loading.classList.add('hidden');
+                feedList.innerHTML = '<p class="error">Failed to look up job portals. Please try again later.</p>';
+                console.error(error);
+            }
+        }
+        
+        // Auto-load roles immediately when page opens
+        window.onload = loadJobs;
+    </script>
+</body>
+</html>
