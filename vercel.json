@@ -4,5 +4,6 @@
   "rewrites": [
     { "source": "/api/fetch-jobs", "destination": "/api/fetch-jobs.js" },
     { "source": "/jobs", "destination": "/jobs.html" }
+    { "source": "/(.*)", "destination": "/portfolio/$1" }
   ]
 }
