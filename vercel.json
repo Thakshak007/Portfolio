@@ -1,8 +1,8 @@
 {
+  "version": 2,
   "cleanUrls": true,
   "rewrites": [
     { "source": "/api/fetch-jobs", "destination": "/api/fetch-jobs.js" },
-    { "source": "/jobs", "destination": "/jobs/index.html" },
-    { "source": "/(.*)", "destination": "/portfolio/$1" }
+    { "source": "/jobs", "destination": "/jobs.html" }
   ]
 }
