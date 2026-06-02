@@ -1,81 +1,139 @@
 export default async function handler(req, res) {
-    // Set headers explicitly to ensure your frontend browser can read the data smoothly
+    // Force cross-origin accessibility flags for clean browser communication
     res.setHeader('Access-Control-Allow-Origin', '*');
     res.setHeader('Content-Type', 'application/json');
 
-    // 1. Core Industry Feed: High-quality, guaranteed listings tailored specifically to your VLSI/Hardware profile
-    const premiumVLSILisings = [
-        {
-            title: "Physical Design Engineer (Trainee)",
-            company: "Core Silicon Network Partners",
-            location: "Bengaluru, India",
-            link: "https://www.linkedin.com/in/thakshak-m-p/",
-            description: "Seeking engineering graduates with an MTech background in VLSI. Requires strong fundamentals in RTL-to-GDSII flow, synthesis, floorplanning, placement, CTS, routing, and 28nm timing closure rules.",
-            source: "Direct Engineering Feed"
-        },
-        {
-            title: "Embedded Hardware Engineering Intern",
-            company: "Mistral Solutions Candidate Pipeline",
-            location: "Bengaluru, Karnataka",
-            link: "https://www.linkedin.com/in/thakshak-m-p/",
-            description: "Looking for an engineering intern skilled in VHDL modeling, simulation verification protocols (UART, SPI, I2C), and physical hardware verification via Xilinx Vivado toolchains.",
-            source: "Direct Engineering Feed"
-        },
-        {
-            title: "Junior Physical Design Engineer",
-            company: "Advanced Circuit Architectures",
-            location: "Bengaluru, India",
-            link: "https://www.linkedin.com/in/thakshak-m-p/",
-            description: "Entry-level position for an electronics post-graduate to assist team with physical layout constraints, floorplanning blockages, and resolving setup/hold violations using PrimeTime tools.",
-            source: "Direct Engineering Feed"
-        }
-    ];
+    let processedMasterFeed = [];
 
+    // ==========================================================
+    // PIPELINE 1: Real-World Live LinkedIn Guest Engine 
+    // ==========================================================
     try {
-        // 2. Fetch live data from a stable, public developer job board RSS feed
-        const publicFeedUrl = 'https://hnrss.org/jobs';
-        const response = await fetch(publicFeedUrl);
+        // Querying LinkedIn's native search tunnel for Physical Design engineering in India
+        const linkedinTargetUrl = 'https://www.linkedin.com/jobs-guest/jobs/api/seeMoreJobPostings/search?keywords=Physical%20Design%20Engineer&location=India&f_TPR=r604800&start=0';
         
-        const combinedJobs = [...premiumVLSILisings];
+        const liResponse = await fetch(linkedinTargetUrl, {
+            headers: {
+                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+                'Accept-Language': 'en-US,en;q=0.9'
+            }
+        });
 
-        if (response.ok) {
-            const xmlText = await response.text();
+        if (liResponse.ok) {
+            const rawHtmlChunk = await liResponse.text();
             
-            // Safe, lightweight string parsing to extract live job titles and links without heavy libraries
-            const items = xmlText.split('<item>');
-            // Skip the first split entry as it's just feed metadata
-            for (let i = 1; i < items.length; i++) {
-                const item = items[i];
-                const titleMatch = item.match(/<title><!\[CDATA\[([\s\S]*?)\]\]><\/title>/) || item.match(/<title>([\s\S]*?)<\/title>/);
-                const linkMatch = item.match(/<link>([\s\S]*?)<\/link>/);
-                const descMatch = item.match(/<description><!\[CDATA\[([\s\S]*?)\]\]><\/description>/) || item.match(/<description>([\s\S]*?)<\/description>/);
+            // Parse individual structural card rows from the LinkedIn layout string
+            const rawCards = rawHtmlChunk.split('<li');
+            
+            for (let i = 1; i < rawCards.length; i++) {
+                const cardHtml = rawCards[i];
+                
+                // Track down matching tags for titles, companies, links, and locations
+                const titleMatch = cardHtml.match(/<h3 class="base-search-card__title">([\s\S]*?)<\/h3>/);
+                const companyMatch = cardHtml.match(/<a class="hidden-nested-link"[\s\S]*?>([\s\S]*?)<\/a>/) || cardHtml.match(/<h4 class="base-search-card__subtitle">([\s\S]*?)<\/h4>/);
+                const locationMatch = cardHtml.match(/<span class="job-search-card__location">([\s\S]*?)<\/span>/);
+                const linkMatch = cardHtml.match(/<a class="base-card__full-link"[\s\S]*?href="([\s\S]*?)"/);
 
                 if (titleMatch && linkMatch) {
-                    combinedJobs.push({
+                    processedMasterFeed.push({
                         title: titleMatch[1].trim(),
-                        company: "Tech Hiring Partner",
-                        location: "Remote / Global",
-                        link: linkMatch[1].trim(),
-                        description: descMatch ? descMatch[1].replace(/<[^>]*>/g, '').substring(0, 200) + "..." : "Technical engineering opening.",
-                        source: "Global Dev Feed"
+                        company: companyMatch ? companyMatch[1].trim() : "Semiconductor Hiring Partner",
+                        location: locationMatch ? locationMatch[1].trim() : "Bengaluru, India",
+                        link: linkMatch[1].split('?')[0], // Strips tracking parameters out for clean linking
+                        description: "Real-world live vacancy sourced from LinkedIn search registry index. Click apply to review full timeline benchmarks and profile requirements.",
+                        source: "LinkedIn Live Index"
                     });
                 }
             }
         }
+    } catch (liError) {
+        console.warn("LinkedIn guest stream throttled by rate limit filter.", liError);
+    }
 
-        // 3. Final matching layer: filter out non-engineering or unrelated noise
-        const filteredJobs = combinedJobs.filter(job => {
-            const textToScan = ((job.title || '') + " " + (job.description || '')).toLowerCase();
-            const keywords = ['mtech', 'vlsi', 'embedded', 'physical design', 'asic', 'hardware', 'engineer', 'developer', 'intern', 'trainee', 'silicon'];
-            return keywords.some(keyword => textToScan.includes(keyword));
+    // ==========================================================
+    // PIPELINE 2: Global Startup Ecosystem Feed (HackerNews)
+    // ==========================================================
+    try {
+        const hnResponse = await fetch('https://hnrss.org/jobs');
+        if (hnResponse.ok) {
+            const xmlText = await hnResponse.text();
+            const segments = xmlText.split('<item>');
+            
+            for (let i = 1; i < segments.length; i++) {
+                const chunk = segments[i];
+                const titleRegex = chunk.match(/<title><!\[CDATA\[([\s\S]*?)\]\]><\/title>/) || chunk.match(/<title>([\s\S]*?)<\/title>/);
+                const linkRegex = chunk.match(/<link>([\s\S]*?)<\/link>/);
+                const descRegex = chunk.match(/<description><!\[CDATA\[([\s\S]*?)\]\]><\/description>/) || chunk.match(/<description>([\s\S]*?)<\/description>/);
+
+                if (titleRegex && linkRegex) {
+                    const rawTitle = titleRegex[1].trim();
+                    let extractedCompany = "Deep Tech Venture";
+                    let finalTitle = rawTitle;
+                    
+                    if (rawTitle.includes(' is hiring ')) {
+                        const splitted = rawTitle.split(' is hiring ');
+                        extractedCompany = splitted[0];
+                        finalTitle = splitted[1];
+                    }
+
+                    processedMasterFeed.push({
+                        title: finalTitle,
+                        company: extractedCompany,
+                        location: "Remote / International",
+                        link: linkRegex[1].trim(),
+                        description: descRegex ? descRegex[1].replace(/<[^>]*>/g, '').substring(0, 180) + "..." : "Technical vacancy listing details available online.",
+                        source: "HackerNews Network Feed"
+                    });
+                }
+            }
+        }
+    } catch (hnError) { console.warn("Tech RSS endpoint timed out.", hnError); }
+
+    // ==========================================================
+    // PIPELINE 3: Remote Hardware & Global API (WeWorkRemotely)
+    // ==========================================================
+    try {
+        const wwrResponse = await fetch('https://weworkremotely.com/api/v1/posts');
+        if (wwrResponse.ok) {
+            const data = await wwrResponse.json();
+            if (data && Array.isArray(data.jobs)) {
+                data.jobs.slice(0, 25).forEach(job => {
+                    processedMasterFeed.push({
+                        title: job.title,
+                        company: job.company,
+                        location: job.candidate_required_location || "Remote Opportunity",
+                        link: job.url,
+                        description: job.description ? job.description.replace(/<[^>]*>/g, '').substring(0, 180) + "..." : "Click to view architectural tracking credentials.",
+                        source: "WeWorkRemotely Portal Feed"
+                    });
+                });
+            }
+        }
+    } catch (wwrError) { console.warn("Global WWR stream offline.", wwrError); }
+
+    // ==========================================================
+    // MULTI-SITE CRITERIA INTELLIGENT MATCHING LAYER
+    // ==========================================================
+    // These keywords screen your collective feeds so only relevant roles show up
+    const trackingKeywords = [
+        'vlsi', 'physical design', 'asic', 'hardware', 'pcb', 'layout', 'circuit',
+        'sta', 'timing', 'synthesis', 'floorplanning', 'placement', 'cts', 'routing',
+        'fresher', 'trainee', 'junior', 'graduate', 'engineer', 'developer'
+    ];
+
+    try {
+        const filteredOutput = processedMasterFeed.filter(job => {
+            const rawBlockText = ((job.title || '') + " " + (job.description || '')).toLowerCase();
+            return trackingKeywords.some(keyword => rawBlockText.includes(keyword.toLowerCase()));
         });
 
-        // Send down the payload safely
-        return res.status(200).json(filteredJobs);
+        // Safe Fallback: If filter runs dry, present the 12 most fresh live entries directly
+        const payloadToReturn = filteredOutput.length > 0 ? filteredOutput : processedMasterFeed.slice(0, 12);
+        
+        return res.status(200).json(payloadToReturn);
 
-    } catch (error) {
-        console.error("Graceful safety fallback triggered:", error);
-        // If the external network request fails, return your core VLSI jobs instead of crashing
-        return res.status(200).json(premiumVLSILisings);
+    } catch (filterException) {
+        console.error("Critical layer matching exception:", filterException);
+        return res.status(200).json(processedMasterFeed.slice(0, 10));
     }
 }
