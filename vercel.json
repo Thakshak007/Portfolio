@@ -1,9 +1,9 @@
 {
   "version": 2,
   "cleanUrls": true,
-  "rewrites": [
-    { "source": "/api/fetch-jobs", "destination": "/api/fetch-jobs.js" },
-    { "source": "/jobs", "destination": "/jobs.html" },
-    { "source": "/(.*)", "destination": "/portfolio/$1" }
+  "routes": [
+    { "src": "/api/fetch-jobs", "dest": "/api/fetch-jobs.js" },
+    { "src": "/jobs", "dest": "/jobs/index.html" },
+    { "src": "/(.*)", "dest": "/portfolio/$1" }
   ]
 }
