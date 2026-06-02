@@ -1,0 +1,82 @@
+:root {
+    --bg-dark: #0f172a;
+    --card-bg: #1e293b;
+    --accent-blue: #3b82f6;
+    --text-light: #f8fafc;
+    --text-muted: #94a3b8;
+}
+
+body {
+    background-color: var(--bg-dark);
+    color: var(--text-light);
+    font-family: 'Segoe UI', sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+.container {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+header {
+    text-align: center;
+    padding: 40px 0;
+    border-bottom: 1px solid #334155;
+}
+
+header h1 { color: var(--text-light); font-size: 2rem; }
+header p { color: var(--text-muted); }
+
+#controls {
+    text-align: center;
+    margin: 30px 0;
+}
+
+button {
+    background: var(--accent-blue);
+    color: white;
+    border: none;
+    padding: 12px 24px;
+    font-size: 1rem;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 600;
+}
+
+button:hover { background: #2563eb; }
+
+#loading {
+    text-align: center;
+    color: var(--text-muted);
+    font-style: italic;
+    font-size: 1.1rem;
+}
+
+.hidden { display: none; }
+
+.job-card {
+    background: var(--card-bg);
+    padding: 20px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    border-left: 5px solid var(--accent-blue);
+    box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+}
+
+.job-card h3 { margin: 0 0 10px 0; color: #fff; }
+.company { color: var(--text-muted); margin-bottom: 5px; }
+.source-tag { font-size: 0.85rem; color: #38bdf8; margin-bottom: 15px; }
+
+.apply-btn {
+    display: inline-block;
+    background: #10b981;
+    color: white;
+    text-decoration: none;
+    padding: 8px 16px;
+    border-radius: 4px;
+    font-size: 0.9rem;
+    font-weight: bold;
+}
+.apply-btn:hover { background: #059669; }
