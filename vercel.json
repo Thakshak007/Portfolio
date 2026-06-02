@@ -2,6 +2,6 @@
   "rewrites": [
     { "source": "/jobs", "destination": "/jobs/index.html" },
     { "source": "/api/fetch-jobs", "destination": "/api/fetch-jobs.js" },
-    { "source": "/(.*)", "destination": "/portfolio/$1" }
+    { "source": "/(.*)", "destination": "/port/$1" }
   ]
 }
